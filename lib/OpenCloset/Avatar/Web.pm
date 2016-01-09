@@ -5,9 +5,9 @@ use OpenCloset::Avatar::Schema;
 
 use version; our $VERSION = qv("v0.0.1");
 
-has DB => sub {
+has schema => sub {
     my $self = shift;
-    OpenCloset::Schema->connect(
+    OpenCloset::Avatar::Schema->connect(
         {
             dsn      => $self->config->{database}{dsn},
             user     => $self->config->{database}{user},
@@ -27,6 +27,9 @@ This method will run once at server start
 
 sub startup {
     my $self = shift;
+
+    $self->plugin('Config');
+    $self->plugin('OpenCloset::Plugin::Helpers');
 
     $self->secrets( [$ENV{OPENCLOSET_AVATAR_WEB_SECRET} || time] );
     $self->_routes;
