@@ -8,3 +8,15 @@
     $ mysql -u root -p -e 'GRANT ALL PRIVILEGES ON `opencloset-avatar`.* TO opencloset@localhost IDENTIFIED by "opencloset";'
     $ mysql -u opencloset -p -e 'CREATE DATABASE `opencloset-avatar` DEFAULT CHARACTER SET utf8;'
     $ mysql -u opencloset -p opencloset-avatar < db/init.sql
+
+
+## How to change default image ##
+
+``` sh
+#!/bin/sh
+curl \
+    -F "token=xxxxxxxxx" \
+    -F "key=default" \
+    -F "img=@path/to/default.png" \
+    https://avatar.theopencloset.net/avatar
+```
