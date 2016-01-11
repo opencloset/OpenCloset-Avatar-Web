@@ -32,6 +32,7 @@ sub startup {
     $self->plugin('OpenCloset::Plugin::Helpers');
 
     $self->secrets( [$ENV{OPENCLOSET_AVATAR_WEB_SECRET} || time] );
+    $self->sessions->cookie_name( $self->app->moniker );
     $self->_routes;
 }
 
