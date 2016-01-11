@@ -10,6 +10,8 @@ use Path::Tiny ();
 
 has schema => sub { shift->app->schema };
 
+=encoding utf8
+
 =head1 METHODS
 
 =head2 md5sum
@@ -20,6 +22,8 @@ has schema => sub { shift->app->schema };
     GET /avatar/d41d8cd98f00b204e9800998ecf8427e?s=200
     GET /avatar/d41d8cd98f00b204e9800998ecf8427e?d=http://www.example.com/default.jpg
     GET /avatar/d41d8cd98f00b204e9800998ecf8427e?s=200&d=http://www.example.com/default.jpg
+
+=head3 params
 
 =over
 
@@ -111,22 +115,27 @@ sub md5sum {
     # avatar.create
     POST /avatar
 
-    token=xxxx&key=abc@example.com&img=<image raw data>
+=head3 params
 
 =over
 
 =item token
 
-Authenticate via pre-defined C<token>
-Disallow not authentication request
+Authenticate via pre-defined C<token>, disallow not authentication requests
+
+    token=s3cr3t
 
 =item key
 
 any strings
 
+    key=abc@example.com
+
 =item img
 
 image raw data
+
+    <raw data of a.png>
 
 =back
 
