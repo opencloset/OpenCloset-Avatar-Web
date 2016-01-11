@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Mojo::JSON ();
+
+my $db_opts
+    = $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS}
+    ? Mojo::JSON::decode_json( $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS} )
+    : +{ quote_char => q{`}, mysql_enable_utf8 => 1, on_connect_do => 'SET NAMES utf8', };
+
+$db_opts->{RaiseError} //= 1;
+$db_opts->{AutoCommit} //= 1;
+
+{
+    database => {
+        dsn  => $ENV{OPENCLOSET_AVATAR_DATABASE_DSN}  || "dbi:mysql:opencloset-avatar:127.0.0.1",
+        name => $ENV{OPENCLOSET_AVATAR_DATABASE_NAME} || 'opencloset-avatar',
+        user => $ENV{OPENCLOSET_AVATAR_DATABASE_USER} || 'opencloset',
+        pass => $ENV{OPENCLOSET_AVATAR_DATABASE_PASS} // 'opencloset',
+        opts => $db_opts,
+    },
+    token => $ENV{OPENCLOSET_AVATAR_TOKEN} || 's3cr3t',
+};

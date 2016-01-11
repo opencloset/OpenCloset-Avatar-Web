@@ -1,0 +1,43 @@
+FORMAT: 1A
+HOST: https://avatar.theopencloset.net/
+
+# avatar
+
+Manage profile image and thumbnails.
+
+## Avatar Collection [/avatar]
+
+### Create or update a new Avatar [POST]
+You may upload profile image.
+
++ Request (application/json)
+
+        {
+            "token": "xxxxxxxx",
+            "key": "default"
+            "img": "<raw data of default.png>"
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /avatar/c21f969b5f03d33d43e04f8f136e7682
+
+    + Body
+
+            {
+              "id": "1",
+              "update_date": "2016-01-09T07:46:13",
+              "create_date": "2016-01-09T03:46:16",
+              "md5sum": "c21f969b5f03d33d43e04f8f136e7682"
+            }
+
+## Avatar image [/avatar/{md5sum}]
+
++ Parameters
+    + md5sum (string) - md5_hex of the key
+
+### Get image with md5sum [GET]
+
++ Response 200 (image/png)
