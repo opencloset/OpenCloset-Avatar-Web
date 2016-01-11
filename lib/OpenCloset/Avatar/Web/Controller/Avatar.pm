@@ -106,7 +106,6 @@ sub md5sum {
     return $self->error( 400, "Not supported image type: $type->{file_type}" ) unless $mime_type;
 
     $self->res->headers->content_type($mime_type);
-
     return $self->reply->static( sprintf "thumbnails/%s/%s", $parent->basename, $image->basename );
 }
 
@@ -168,13 +167,15 @@ sub create {
         $file->remove if $file->basename =~ /$rest/;
     }
 
+    $self->res->headers->location( $self->url_for( 'avatar', md5sum => $avatar->md5sum ) );
     $self->render(
         json => {
             id          => $avatar->id,
             md5sum      => $avatar->md5sum,
             create_date => $avatar->create_date,
             update_date => $avatar->update_date
-        }
+        },
+        status => 201
     );
 }
 
