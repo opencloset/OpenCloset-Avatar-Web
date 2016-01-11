@@ -111,13 +111,22 @@ sub md5sum {
     # avatar.create
     POST /avatar
 
+    token=xxxx&key=abc@example.com&img=<image raw data>
+
 =over
 
 =item token
 
+Authenticate via pre-defined C<token>
+Disallow not authentication request
+
 =item key
 
+any strings
+
 =item img
+
+image raw data
 
 =back
 
