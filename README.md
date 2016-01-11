@@ -1,3 +1,5 @@
+https://docs.avatar3.apiary.io/
+
 # DEPENDENCIES #
 
     $ sudo apt-get install libgd-dev
