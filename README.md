@@ -1,4 +1,4 @@
-https://docs.avatar3.apiary.io/
+http://docs.avatar3.apiary.io/
 
 # DEPENDENCIES #
 
