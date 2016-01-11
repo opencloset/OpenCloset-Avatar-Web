@@ -1,80 +1,33 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://avatar.theopencloset.net/
 
 # avatar
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+Manage profile image and thumbnails.
 
-## Questions Collection [/questions]
+### Create(or update) a new Avatar [POST]
 
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+새로운 이미지를 만들 수 있습니다.
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "token": "xxxxxxxx",
+            "key": "default"
+            "img": "<raw data of default.png>"
         }
 
 + Response 201 (application/json)
 
     + Headers
 
-            Location: /questions/2
+            Location: /avatar
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+              "id": "1",
+              "update_date": "2016-01-09T07:46:13",
+              "create_date": "2016-01-09T03:46:16",
+              "md5sum": "c21f969b5f03d33d43e04f8f136e7682"
             }
