@@ -5,7 +5,7 @@ use Mojolicious::Types;
 use Digest::MD5 ();
 use HTTP::Tiny;
 use Image::Info ();
-use Image::Resize;
+use Image::Imlib2;
 use Path::Tiny ();
 
 has schema => sub { shift->app->schema };
@@ -88,10 +88,11 @@ sub md5sum {
     }
 
     if ($s) {
-        my $ir     = Image::Resize->new("$image");
-        my $gd     = $ir->resize( $s, $s );
+        my $im = Image::Imlib2->load("$image");
+        my $image2 = $im->create_scaled_image( $s, $s );
+        $image2->image_set_format('png');
         my $resize = Path::Tiny::path( sprintf '%ss=%dx%d', $image, $s, $s );
-        $resize->spew_raw( $gd->png ) unless $resize->exists;
+        $image2->save("$resize") unless $resize->exists;
         $image = $resize;
     }
 
