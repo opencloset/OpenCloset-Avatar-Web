@@ -14,10 +14,8 @@
 
 # RUN #
 
-    $ cp avatar.conf.sample avatar.conf
-    # then, edit config file your self
-
-    $ MOJO_CONFIG=avatar.conf morbo -vl 'http://*:5002' ./script/open_closet_avatar_web
+    $ cp avatar.conf.sample avatar.conf    # then customize it!
+    $ MOJO_CONFIG=avatar.conf morbo -vl 'http://*:5002' ./script/avatar
 
 ## How to change default image ##
 
