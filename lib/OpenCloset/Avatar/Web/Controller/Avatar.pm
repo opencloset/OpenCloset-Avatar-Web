@@ -164,8 +164,10 @@ sub create {
     ## image 가 등록/변경되고 나면 관련된 thumbnails 를 지운다
     my ( $prefix, $rest ) = $avatar->md5sum =~ /(\w{2})(\w*)/;
     my $dir = Path::Tiny::path( $self->app->home->rel_dir("public/thumbnails/$prefix") );
-    for my $file ( $dir->children ) {
-        $file->remove if $file->basename =~ /$rest/;
+    if ( $dir->exists ) {
+        for my $file ( $dir->children ) {
+            $file->remove if $file->basename =~ /$rest/;
+        }
     }
 
     $self->res->headers->location( $self->url_for( 'avatar', md5sum => $avatar->md5sum ) );
