@@ -1,7 +1,4 @@
 SET NAMES utf8;
-
-DROP   DATABASE `opencloset-avatar`;
-CREATE DATABASE `opencloset-avatar`;
 USE `opencloset-avatar`;
 
 CREATE TABLE `avatar` (

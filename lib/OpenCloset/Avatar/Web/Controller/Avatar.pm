@@ -5,7 +5,7 @@ use Mojolicious::Types;
 use Digest::MD5 ();
 use HTTP::Tiny;
 use Image::Info ();
-use Image::Resize;
+use Image::Imlib2;
 use Path::Tiny ();
 
 has schema => sub { shift->app->schema };
@@ -88,10 +88,11 @@ sub md5sum {
     }
 
     if ($s) {
-        my $ir     = Image::Resize->new("$image");
-        my $gd     = $ir->resize( $s, $s );
+        my $im = Image::Imlib2->load("$image");
+        my $image2 = $im->create_scaled_image( $s, $s );
+        $image2->image_set_format('png');
         my $resize = Path::Tiny::path( sprintf '%ss=%dx%d', $image, $s, $s );
-        $resize->spew_raw( $gd->png ) unless $resize->exists;
+        $image2->save("$resize") unless $resize->exists;
         $image = $resize;
     }
 
@@ -163,8 +164,10 @@ sub create {
     ## image 가 등록/변경되고 나면 관련된 thumbnails 를 지운다
     my ( $prefix, $rest ) = $avatar->md5sum =~ /(\w{2})(\w*)/;
     my $dir = Path::Tiny::path( $self->app->home->rel_dir("public/thumbnails/$prefix") );
-    for my $file ( $dir->children ) {
-        $file->remove if $file->basename =~ /$rest/;
+    if ( $dir->exists ) {
+        for my $file ( $dir->children ) {
+            $file->remove if $file->basename =~ /$rest/;
+        }
     }
 
     $self->res->headers->location( $self->url_for( 'avatar', md5sum => $avatar->md5sum ) );
