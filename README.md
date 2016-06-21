@@ -5,6 +5,17 @@
     $ sudo apt-get install libgd-dev
     $ cpanm --installdeps .
 
+- `libgd-dev`
+- `libgd2-xpm-dev`
+
+둘중에 뭐를 해야할지 모르겠음
+현재는 debian-sid 의 `libgd2-xpm-dev` 는 **debports** 상태
+
+ports of packages to architectures not yet or not anymore available in
+Debian
+
+`libgd-dev` 만 설치된 상태에서는 perl package `GD` 가 설치되지 않음
+
 # DATABASE INITIALIZE #
 
     # `opencloset-avatar` DB 를 만들고 `opencloset` 계정에 권한 부여
