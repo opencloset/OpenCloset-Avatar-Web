@@ -2,6 +2,10 @@
 
 열린옷장 프로필 이미지 서비스
 
+## Version ##
+
+v0.0.1
+
 ## Dependencies ##
 
     $ sudo apt-get install Imlib2-dev
