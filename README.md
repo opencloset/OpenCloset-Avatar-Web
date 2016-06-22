@@ -8,7 +8,7 @@ v0.0.1
 
 ## Dependencies ##
 
-    $ sudo apt-get install Imlib2-dev
+    $ sudo apt-get install libimlib2-dev
     $ cpanm --installdeps .
 
 ## Database Setup ##
