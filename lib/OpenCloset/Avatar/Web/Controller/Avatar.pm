@@ -315,4 +315,41 @@ sub delete_image {
     $self->render( json => { msg => 'Successuflly delete image' }, status => 201 );
 }
 
+=head2 update_image
+
+    PUT /avatar/:md5sum/images/:image_id
+
+=cut
+
+sub update_image {
+    my $self     = shift;
+    my $md5sum   = $self->param('md5sum');
+    my $image_id = $self->param('image_id');
+
+    my $v = $self->validation;
+
+    my @tokens = ( $self->config->{token} );
+    $v->required('token')->in(@tokens);
+    $v->required('rating')->size( 1, 2 );
+
+    return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
+
+    my $rating = $v->param('rating');
+
+    my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
+    return $self->error( 404, "Not found avatar: $md5sum" ) unless $avatar;
+
+    my $avatar_image = $self->schema->resultset('AvatarImage')->find( { id => $image_id } );
+    return $self->error( 404, "Not found images: $image_id" ) unless $avatar_image;
+
+    $avatar_image->update( { rating => $rating } );
+    $self->render(
+        json => {
+            id          => $avatar_image->id,
+            rating      => $avatar_image->rating,
+            create_date => $avatar_image->create_date,
+        }
+    );
+}
+
 1;
