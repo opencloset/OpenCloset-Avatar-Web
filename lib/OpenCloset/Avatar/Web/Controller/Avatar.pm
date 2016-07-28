@@ -14,6 +14,83 @@ has schema => sub { shift->app->schema };
 
 =head1 METHODS
 
+=head2 create
+
+    # avatar.create
+    POST /avatar
+
+=head3 params
+
+=over
+
+=item token
+
+Authenticate via pre-defined C<token>, disallow not authentication requests
+
+    token=s3cr3t
+
+=item key
+
+any strings
+
+    key=abc@example.com
+
+=item img
+
+image raw data
+
+    <raw data of a.png>
+
+=back
+
+=cut
+
+sub create {
+    my $self = shift;
+
+    my $v = $self->validation;
+
+    my @tokens = ( $self->config->{token} );
+    $v->required('token')->in(@tokens);
+    $v->required('key');
+    $v->required('img');
+
+    return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
+
+    my $key = $v->param('key');
+    my $img = $v->param('img');
+
+    my $avatar = $self->schema->resultset('Avatar')->find_or_create( { md5sum => Digest::MD5::md5_hex($key) } );
+
+    return $self->error( 500, 'Failed to create a avatar' ) unless $avatar;
+
+    my $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
+
+    return $self->error( 500, 'Failed to create a avatar image' ) unless $avatar_image;
+
+    $self->res->headers->location(
+        $self->url_for(
+            'avatar.image',
+            md5sum   => $avatar->md5sum,
+            image_id => $avatar_image->id
+        )
+    );
+
+    $self->render(
+        json => {
+            id           => $avatar->id,
+            md5sum       => $avatar->md5sum,
+            create_date  => $avatar->create_date,
+            avatar_image => {
+                id          => $avatar_image->id,
+                rating      => $avatar_image->rating || '0',
+                create_date => $avatar_image->create_date,
+            }
+        },
+        status => 201
+    );
+}
+
 =head2 md5sum
 
     # avatar
@@ -198,83 +275,6 @@ sub image {
 
     $self->res->headers->content_type($mime_type);
     return $self->reply->static( sprintf "thumbnails/%s/%s", $parent->basename, $image->basename );
-}
-
-=head2 create
-
-    # avatar.create
-    POST /avatar
-
-=head3 params
-
-=over
-
-=item token
-
-Authenticate via pre-defined C<token>, disallow not authentication requests
-
-    token=s3cr3t
-
-=item key
-
-any strings
-
-    key=abc@example.com
-
-=item img
-
-image raw data
-
-    <raw data of a.png>
-
-=back
-
-=cut
-
-sub create {
-    my $self = shift;
-
-    my $v = $self->validation;
-
-    my @tokens = ( $self->config->{token} );
-    $v->required('token')->in(@tokens);
-    $v->required('key');
-    $v->required('img');
-
-    return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
-
-    my $key = $v->param('key');
-    my $img = $v->param('img');
-
-    my $avatar = $self->schema->resultset('Avatar')->find_or_create( { md5sum => Digest::MD5::md5_hex($key) } );
-
-    return $self->error( 500, 'Failed to create a avatar' ) unless $avatar;
-
-    my $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
-
-    return $self->error( 500, 'Failed to create a avatar image' ) unless $avatar_image;
-
-    $self->res->headers->location(
-        $self->url_for(
-            'avatar.image',
-            md5sum   => $avatar->md5sum,
-            image_id => $avatar_image->id
-        )
-    );
-
-    $self->render(
-        json => {
-            id           => $avatar->id,
-            md5sum       => $avatar->md5sum,
-            create_date  => $avatar->create_date,
-            avatar_image => {
-                id          => $avatar_image->id,
-                rating      => $avatar_image->rating || '0',
-                create_date => $avatar_image->create_date,
-            }
-        },
-        status => 201
-    );
 }
 
 1;
