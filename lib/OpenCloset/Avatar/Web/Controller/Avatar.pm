@@ -277,13 +277,13 @@ sub image {
     return $self->reply->static( sprintf "thumbnails/%s/%s", $parent->basename, $image->basename );
 }
 
-=head2 image
+=head2 delete_image
 
     DELETE /avatar/:md5sum/images/:image_id
 
 =cut
 
-sub delete {
+sub delete_image {
     my $self     = shift;
     my $md5sum   = $self->param('md5sum');
     my $image_id = $self->param('image_id');
