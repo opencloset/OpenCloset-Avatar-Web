@@ -186,7 +186,7 @@ sub create {
             create_date  => $avatar->create_date,
             avatar_image => {
                 id          => $avatar_image->id,
-                rating      => $avatar_image->rating,
+                rating      => $avatar_image->rating || '0',
                 create_date => $avatar_image->create_date,
             }
         },
