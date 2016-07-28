@@ -47,6 +47,7 @@ sub _routes {
 
     my $r = $self->routes;
     $r->get('/avatar/:md5sum')->to('avatar#md5sum')->name('avatar');
+    $r->get('/avatar/:md5sum/images/:image_id')->to('avatar#image')->name('avatar.image');
     $r->post('/avatar')->to('avatar#create')->name('avatar.create');
 }
 

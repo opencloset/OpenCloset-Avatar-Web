@@ -57,9 +57,11 @@ sub md5sum {
     my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
     my $image;
     if ($avatar) {
+        my $avatar_image = $avatar->avatar_images( undef, { order_by => { -desc => 'rating' }, rows => 1 } )->single;
         my ( $prefix, $rest ) = $md5sum =~ /(\w{2})(\w*)/;
-        $image = Path::Tiny::path( $self->app->home->rel_file("public/thumbnails/$prefix/$rest") );
-        $image->touchpath && $image->spew_raw( $avatar->image ) unless $image->exists;
+        $image = Path::Tiny::path(
+            $self->app->home->rel_file( sprintf( 'public/thumbnails/%s/%s.%d', $prefix, $rest, $avatar_image->id ) ) );
+        $image->touchpath && $image->spew_raw( $avatar_image->image ) unless $image->exists;
     }
     else {
         if ( $d && $d =~ /^http/ ) {
@@ -83,16 +85,21 @@ sub md5sum {
         my $md5sum = Digest::MD5::md5_hex('default');
         my ( $prefix, $rest ) = $md5sum =~ /(\w{2})(\w*)/;
         my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
-        $image = Path::Tiny::path( $self->app->home->rel_file("public/thumbnails/$prefix/$rest") );
-        $image->touchpath && $image->spew_raw( $avatar->image ) unless $image->exists;
+        my $avatar_image = $avatar->avatar_images( undef, { order_by => { -desc => 'rating' }, rows => 1 } )->single;
+        $image = Path::Tiny::path(
+            $self->app->home->rel_file( sprintf( 'public/thumbnails/%s/%s.%d', $prefix, $rest, $avatar_image->id ) ) );
+        $image->touchpath && $image->spew_raw( $avatar_image->image ) unless $image->exists;
     }
 
     if ($s) {
-        my $im = Image::Imlib2->load("$image");
-        my $image2 = $im->create_scaled_image( $s, $s );
-        $image2->image_set_format('png');
-        my $resize = Path::Tiny::path( sprintf '%ss=%dx%d', $image, $s, $s );
-        $image2->save("$resize") unless $resize->exists;
+        my $resize = Path::Tiny::path( sprintf '%s.s=%dx%d', $image, $s, $s );
+        unless ( $resize->exists ) {
+            my $im = Image::Imlib2->load("$image");
+            my $image2 = $im->create_scaled_image( $s, $s );
+            $image2->image_set_format('png');
+            $image2->save("$resize");
+        }
+
         $image = $resize;
     }
 
@@ -156,27 +163,32 @@ sub create {
     my $key = $v->param('key');
     my $img = $v->param('img');
 
-    my $avatar = $self->schema->resultset('Avatar')
-        ->update_or_create( { md5sum => Digest::MD5::md5_hex($key), image => $img->slurp } );
+    my $avatar = $self->schema->resultset('Avatar')->find_or_create( { md5sum => Digest::MD5::md5_hex($key) } );
 
-    return $self->error( 500, 'Failed to create avatar' ) unless $avatar;
+    return $self->error( 500, 'Failed to create a avatar' ) unless $avatar;
 
-    ## image 가 등록/변경되고 나면 관련된 thumbnails 를 지운다
-    my ( $prefix, $rest ) = $avatar->md5sum =~ /(\w{2})(\w*)/;
-    my $dir = Path::Tiny::path( $self->app->home->rel_dir("public/thumbnails/$prefix") );
-    if ( $dir->exists ) {
-        for my $file ( $dir->children ) {
-            $file->remove if $file->basename =~ /$rest/;
-        }
-    }
+    my $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
 
-    $self->res->headers->location( $self->url_for( 'avatar', md5sum => $avatar->md5sum ) );
+    return $self->error( 500, 'Failed to create a avatar image' ) unless $avatar_image;
+
+    $self->res->headers->location(
+        $self->url_for(
+            'avatar.image',
+            md5sum   => $avatar->md5sum,
+            image_id => $avatar_image->id
+        )
+    );
+
     $self->render(
         json => {
-            id          => $avatar->id,
-            md5sum      => $avatar->md5sum,
-            create_date => $avatar->create_date,
-            update_date => $avatar->update_date
+            id           => $avatar->id,
+            md5sum       => $avatar->md5sum,
+            create_date  => $avatar->create_date,
+            avatar_image => {
+                id          => $avatar_image->id,
+                rating      => $avatar_image->rating,
+                create_date => $avatar_image->create_date,
+            }
         },
         status => 201
     );
