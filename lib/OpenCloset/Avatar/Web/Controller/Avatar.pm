@@ -47,7 +47,7 @@ sub md5sum {
 
     my $v = $self->validation;
     $v->optional('d');
-    $v->optional('s')->like(qr/^[0-9]+$/);
+    $v->optional('s')->size( 2, 3 );
 
     return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
 
@@ -131,7 +131,7 @@ sub images {
     my $md5sum = $self->param('md5sum');
 
     my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
-    return $self->error( 404, "Not found images: $md5sum" ) unless $avatar;
+    return $self->error( 404, "Not found avatar: $md5sum" ) unless $avatar;
 
     my $images = $avatar->avatar_images( undef, { columns => [qw/id/], order_by => { -desc => 'rating' } } );
     my @url;
@@ -141,6 +141,63 @@ sub images {
     }
 
     $self->render( json => \@url );
+}
+
+=head2 image
+
+    # avatar.image
+    GET /avatar/:md5sum/images/:image_id
+
+=cut
+
+sub image {
+    my $self     = shift;
+    my $md5sum   = $self->param('md5sum');
+    my $image_id = $self->param('image_id');
+
+    my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
+    return $self->error( 404, "Not found avatar: $md5sum" ) unless $avatar;
+
+    my $avatar_image = $self->schema->resultset('AvatarImage')->find( { id => $image_id } );
+    return $self->error( 404, "Not found images: $md5sum" ) unless $avatar_image;
+
+    my $v = $self->validation;
+    $v->optional('s')->size( 2, 3 );
+
+    return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
+
+    my $s = $v->param('s');
+
+    my $image;
+    my ( $prefix, $rest ) = $md5sum =~ /(\w{2})(\w*)/;
+    $image = Path::Tiny::path(
+        $self->app->home->rel_file( sprintf( 'public/thumbnails/%s/%s.%d', $prefix, $rest, $avatar_image->id ) ) );
+    $image->touchpath && $image->spew_raw( $avatar_image->image ) unless $image->exists;
+
+    if ($s) {
+        my $resize = Path::Tiny::path( sprintf '%s.s=%dx%d', $image, $s, $s );
+        unless ( $resize->exists ) {
+            my $im = Image::Imlib2->load("$image");
+            my $image2 = $im->create_scaled_image( $s, $s );
+            $image2->image_set_format('png');
+            $image2->save("$resize");
+        }
+
+        $image = $resize;
+    }
+
+    my $parent = $image->parent;
+    my $types  = Mojolicious::Types->new;
+    my $type   = Image::Info::image_type("$image");
+
+    return $self->error( 400, "Not supported image: $type->{error}" ) if $type->{error};
+
+    my $mime_type = $types->type( lc $type->{file_type} );
+
+    return $self->error( 400, "Not supported image type: $type->{file_type}" ) unless $mime_type;
+
+    $self->res->headers->content_type($mime_type);
+    return $self->reply->static( sprintf "thumbnails/%s/%s", $parent->basename, $image->basename );
 }
 
 =head2 create
