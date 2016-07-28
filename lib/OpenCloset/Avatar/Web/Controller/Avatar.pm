@@ -236,7 +236,7 @@ sub image {
     return $self->error( 404, "Not found avatar: $md5sum" ) unless $avatar;
 
     my $avatar_image = $self->schema->resultset('AvatarImage')->find( { id => $image_id } );
-    return $self->error( 404, "Not found images: $md5sum" ) unless $avatar_image;
+    return $self->error( 404, "Not found images: $image_id" ) unless $avatar_image;
 
     my $v = $self->validation;
     $v->optional('s')->size( 2, 3 );
@@ -275,6 +275,44 @@ sub image {
 
     $self->res->headers->content_type($mime_type);
     return $self->reply->static( sprintf "thumbnails/%s/%s", $parent->basename, $image->basename );
+}
+
+=head2 image
+
+    DELETE /avatar/:md5sum/images/:image_id
+
+=cut
+
+sub delete {
+    my $self     = shift;
+    my $md5sum   = $self->param('md5sum');
+    my $image_id = $self->param('image_id');
+
+    my $v = $self->validation;
+
+    my @tokens = ( $self->config->{token} );
+    $v->required('token')->in(@tokens);
+
+    return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
+
+    my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
+    return $self->error( 404, "Not found avatar: $md5sum" ) unless $avatar;
+
+    my $avatar_image = $self->schema->resultset('AvatarImage')->find( { id => $image_id } );
+    return $self->error( 404, "Not found images: $image_id" ) unless $avatar_image;
+
+    $avatar_image->delete;
+
+    ## 관련된 thumbnails 삭제
+    my ( $prefix, $rest ) = $avatar->md5sum =~ /(\w{2})(\w*)/;
+    my $dir = Path::Tiny::path( $self->app->home->rel_dir("public/thumbnails/$prefix") );
+    if ( $dir->exists ) {
+        for my $file ( $dir->children ) {
+            $file->remove if $file->basename =~ m#$rest\.$image_id(\..*)?$#;
+        }
+    }
+
+    $self->render( json => { msg => 'Successuflly delete image' }, status => 201 );
 }
 
 1;

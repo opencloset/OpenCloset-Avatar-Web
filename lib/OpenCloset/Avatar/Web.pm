@@ -49,6 +49,7 @@ sub _routes {
     $r->get('/avatar/:md5sum')->to('avatar#md5sum')->name('avatar');
     $r->get('/avatar/:md5sum/images')->to('avatar#images')->name('avatar.images');
     $r->get('/avatar/:md5sum/images/:image_id')->to('avatar#image')->name('avatar.image');
+    $r->delete('/avatar/:md5sum/images/:image_id')->to('avatar#delete');
     $r->post('/avatar')->to('avatar#create')->name('avatar.create');
 }
 
