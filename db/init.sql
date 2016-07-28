@@ -13,7 +13,7 @@ CREATE TABLE `avatar` (
 CREATE TABLE `avatar_image` (
   `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `avatar_id`   INT UNSIGNED NOT NULL,
-  `image`       BLOB         NOT NULL,
+  `image`       MEDIUMBLOB   NOT NULL,
   `rating`      INT          DEFAULT 0,
   `create_date` DATETIME     DEFAULT NULL,
 

@@ -44,7 +44,7 @@ __PACKAGE__->table("avatar_image");
 
 =head2 image
 
-  data_type: 'blob'
+  data_type: 'mediumblob'
   is_nullable: 0
 
 =head2 rating
@@ -79,7 +79,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "image",
-  { data_type => "blob", is_nullable => 0 },
+  { data_type => "mediumblob", is_nullable => 0 },
   "rating",
   { data_type => "integer", default_value => 0, is_nullable => 1 },
   "create_date",
@@ -122,8 +122,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-07-28 14:47:35
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BdyXiwR/b8P4fIqqeDP5aw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-07-28 16:04:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WGgvLNZYqP649SCd/jRYdQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
