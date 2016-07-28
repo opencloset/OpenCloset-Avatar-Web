@@ -117,6 +117,32 @@ sub md5sum {
     return $self->reply->static( sprintf "thumbnails/%s/%s", $parent->basename, $image->basename );
 }
 
+=head2 images
+
+    # avatar.images
+    GET /avatar/:md5sum/images
+
+    ["http:\/\/localhost:5000\/avatar\/c21f969b5f03d33d43e04f8f136e7682\/images\/1","http:\/\/localhost:5000\/avatar\/c21f969b5f03d33d43e04f8f136e7682\/images\/2"]
+
+=cut
+
+sub images {
+    my $self   = shift;
+    my $md5sum = $self->param('md5sum');
+
+    my $avatar = $self->schema->resultset('Avatar')->find( { md5sum => $md5sum } );
+    return $self->error( 404, "Not found images: $md5sum" ) unless $avatar;
+
+    my $images = $avatar->avatar_images( undef, { columns => [qw/id/], order_by => { -desc => 'rating' } } );
+    my @url;
+
+    while ( my $avatar_image = $images->next ) {
+        push @url, $self->url_for( 'avatar.image', md5sum => $avatar->md5sum, image_id => $avatar_image->id )->to_abs;
+    }
+
+    $self->render( json => \@url );
+}
+
 =head2 create
 
     # avatar.create
