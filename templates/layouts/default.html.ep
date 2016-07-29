@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/assets/components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/components/opencloset.css/dist/css/opencloset.min.css">
+    <link rel="stylesheet" href="/assets/dist/css/screen.min.css">
   </head>
   <body>
     <nav class="navbar navbar-default navbar-oc">
@@ -33,5 +34,6 @@
     %= footer
     <script src="/assets/components/jquery/dist/jquery.min.js"></script>
     <script src="/assets/components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/assets/dist/js/images.min.js"></script>
   </body>
 </html>

@@ -12,11 +12,13 @@
     %   }
     <div class="col-xs-6 col-md-3">
       <a href="<%= url_for('avatar.image', image_id => $image->id) %>" class="thumbnail">
-        <img src="<%= url_for('avatar.image', image_id => $image->id)->query(s => 200) %>" alt="<%= $avatar->md5sum %>">
+        <img src="<%= url_for('avatar.image', image_id => $image->id)->query(s => 200) %>" alt="<%= $avatar->md5sum %>" data-rating="<%= $image->rating || 0 %>">
+        <span class="rating">
+          <span class="star" data-rating="5"></span><span class="star" data-rating="4"></span><span class="star" data-rating="3"></span><span class="star" data-rating="2"></span><span class="star" data-rating="1"></span>
+        </span>
       </a>
     </div>
     % }
   </div>
   % last if $last;
 % }
-

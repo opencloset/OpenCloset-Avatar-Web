@@ -3,3 +3,5 @@ avatar.conf
 
 public/thumbnails/
 components/
+node_modules/
+dist/

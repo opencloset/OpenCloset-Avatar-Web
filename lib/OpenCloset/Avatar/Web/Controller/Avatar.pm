@@ -332,9 +332,6 @@ sub update_image {
     my $image_id = $self->param('image_id');
 
     my $v = $self->validation;
-
-    my @tokens = ( $self->config->{token} );
-    $v->required('token')->in(@tokens);
     $v->required('rating')->size( 1, 2 );
 
     return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;
