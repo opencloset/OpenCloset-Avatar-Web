@@ -1,12 +1,12 @@
 use utf8;
-package OpenCloset::Avatar::Schema::Result::Avatar;
+package OpenCloset::Avatar::Schema::Result::AvatarImage;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-OpenCloset::Avatar::Schema::Result::Avatar
+OpenCloset::Avatar::Schema::Result::AvatarImage
 
 =cut
 
@@ -20,11 +20,11 @@ use warnings;
 
 use base 'OpenCloset::Avatar::Schema::Base';
 
-=head1 TABLE: C<avatar>
+=head1 TABLE: C<avatar_image>
 
 =cut
 
-__PACKAGE__->table("avatar");
+__PACKAGE__->table("avatar_image");
 
 =head1 ACCESSORS
 
@@ -35,11 +35,23 @@ __PACKAGE__->table("avatar");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 md5sum
+=head2 avatar_id
 
-  data_type: 'char'
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_foreign_key: 1
   is_nullable: 0
-  size: 32
+
+=head2 image
+
+  data_type: 'mediumblob'
+  is_nullable: 0
+
+=head2 rating
+
+  data_type: 'integer'
+  default_value: 0
+  is_nullable: 1
 
 =head2 create_date
 
@@ -59,8 +71,17 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "md5sum",
-  { data_type => "char", is_nullable => 0, size => 32 },
+  "avatar_id",
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 0,
+  },
+  "image",
+  { data_type => "mediumblob", is_nullable => 0 },
+  "rating",
+  { data_type => "integer", default_value => 0, is_nullable => 1 },
   "create_date",
   {
     data_type => "datetime",
@@ -83,40 +104,26 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<md5sum>
-
-=over 4
-
-=item * L</md5sum>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("md5sum", ["md5sum"]);
-
 =head1 RELATIONS
 
-=head2 avatar_images
+=head2 avatar
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<OpenCloset::Avatar::Schema::Result::AvatarImage>
+Related object: L<OpenCloset::Avatar::Schema::Result::Avatar>
 
 =cut
 
-__PACKAGE__->has_many(
-  "avatar_images",
-  "OpenCloset::Avatar::Schema::Result::AvatarImage",
-  { "foreign.avatar_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "avatar",
+  "OpenCloset::Avatar::Schema::Result::Avatar",
+  { id => "avatar_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-07-28 14:47:35
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mdaus94nXe2ustTFn8DKZw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-07-28 16:04:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WGgvLNZYqP649SCd/jRYdQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

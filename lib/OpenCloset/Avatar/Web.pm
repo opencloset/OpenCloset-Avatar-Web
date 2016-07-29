@@ -3,7 +3,7 @@ use Mojo::Base 'Mojolicious';
 
 use OpenCloset::Avatar::Schema;
 
-use version; our $VERSION = qv("v0.0.1");
+use version; our $VERSION = qv("v0.1.0");
 
 has schema => sub {
     my $self = shift;
@@ -31,7 +31,7 @@ sub startup {
     $self->plugin('Config');
     $self->plugin('OpenCloset::Plugin::Helpers');
 
-    $self->secrets( [$ENV{OPENCLOSET_AVATAR_WEB_SECRET} || time] );
+    $self->secrets( [ $ENV{OPENCLOSET_AVATAR_WEB_SECRET} || time ] );
     $self->sessions->cookie_name( $self->app->moniker );
     $self->_routes;
 }
@@ -47,6 +47,10 @@ sub _routes {
 
     my $r = $self->routes;
     $r->get('/avatar/:md5sum')->to('avatar#md5sum')->name('avatar');
+    $r->get('/avatar/:md5sum/images')->to('avatar#images')->name('avatar.images');
+    $r->get('/avatar/:md5sum/images/:image_id')->to('avatar#image')->name('avatar.image');
+    $r->delete('/avatar/:md5sum/images/:image_id')->to('avatar#delete_image');
+    $r->put('/avatar/:md5sum/images/:image_id')->to('avatar#update_image');
     $r->post('/avatar')->to('avatar#create')->name('avatar.create');
 }
 
