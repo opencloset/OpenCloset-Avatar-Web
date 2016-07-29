@@ -1,0 +1,22 @@
+% layout 'default';
+% title 'Images';
+
+% while (1) {
+  % my $last;
+  <div class="row">
+    % for my $i (0..3) {
+    %   my $image = $images->next;
+    %   unless ($image) {
+    %     $last = 1;
+    %     last;
+    %   }
+    <div class="col-xs-6 col-md-3">
+      <a href="<%= url_for('avatar.image', image_id => $image->id) %>" class="thumbnail">
+        <img src="<%= url_for('avatar.image', image_id => $image->id)->query(s => 200) %>" alt="<%= $avatar->md5sum %>">
+      </a>
+    </div>
+    % }
+  </div>
+  % last if $last;
+% }
+
