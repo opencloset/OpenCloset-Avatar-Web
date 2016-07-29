@@ -1,0 +1,23 @@
+@import "rating";
+
+.thumbnail:hover {
+    img {
+        filter: blur(3px);
+        -webkit-filter: blur(3px);
+    }
+    .rating{
+        opacity: 1;
+    }
+}
+
+.thumbnail {
+    .rating{
+        position: absolute;
+	z-index: 11;
+	top: 0;
+	padding: 1.5em;
+	opacity: 0;
+        height: 200px;
+        margin-top: 5px;
+    }
+}
