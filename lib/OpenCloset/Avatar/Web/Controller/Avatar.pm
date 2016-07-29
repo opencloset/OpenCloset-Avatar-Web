@@ -211,13 +211,18 @@ sub images {
     return $self->error( 404, "Not found avatar: $md5sum" ) unless $avatar;
 
     my $images = $avatar->avatar_images( undef, { columns => [qw/id/], order_by => { -desc => 'rating' } } );
-    my @url;
 
-    while ( my $avatar_image = $images->next ) {
-        push @url, $self->url_for( 'avatar.image', md5sum => $avatar->md5sum, image_id => $avatar_image->id )->to_abs;
-    }
+    $self->respond_to(
+        html => sub { $self->render( avatar => $avatar, images => $images ) },
+        json => sub {
+            my @url;
+            while ( my $avatar_image = $images->next ) {
+                push @url, $self->url_for( 'avatar.image', md5sum => $avatar->md5sum, image_id => $avatar_image->id )->to_abs;
+            }
 
-    $self->render( json => \@url );
+            $self->render( json => \@url );
+        }
+    );
 }
 
 =head2 image
@@ -327,9 +332,6 @@ sub update_image {
     my $image_id = $self->param('image_id');
 
     my $v = $self->validation;
-
-    my @tokens = ( $self->config->{token} );
-    $v->required('token')->in(@tokens);
     $v->required('rating')->size( 1, 2 );
 
     return $self->error( 400, 'Failed to validation: ' . join( ', ', @{ $v->failed } ) ) if $v->has_error;

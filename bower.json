@@ -1,0 +1,25 @@
+{
+  "name": "avatar",
+  "homepage": "https://github.com/opencloset/OpenCloset-Avatar-Web",
+  "authors": [
+    "Hyungsuk Hong <aanoaa@gmail.com>"
+  ],
+  "description": "opencloset avatar service",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.2.0",
+    "bootstrap": "~3.3.6",
+    "font-awesome": "~4.5.0",
+    "opencloset.css": "https://github.com/opencloset/opencloset.css.git"
+  }
+}
