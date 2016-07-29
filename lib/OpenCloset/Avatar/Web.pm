@@ -31,8 +31,11 @@ sub startup {
     $self->plugin('Config');
     $self->plugin('OpenCloset::Plugin::Helpers');
 
-    $self->secrets( [ $ENV{OPENCLOSET_AVATAR_WEB_SECRET} || time ] );
-    $self->sessions->cookie_name( $self->app->moniker );
+    $self->secrets( $self->config->{secrets} );
+    $self->sessions->cookie_domain( $self->config->{cookie_domain} );
+    $self->sessions->cookie_name('opencloset');
+    $self->sessions->default_expiration(86400);
+
     $self->_routes;
 }
 

@@ -4,8 +4,8 @@ use strict;
 use warnings;
 use Mojo::JSON ();
 
-my $db_opts
-    = $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS}
+my $db_opts =
+    $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS}
     ? Mojo::JSON::decode_json( $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS} )
     : +{ quote_char => q{`}, mysql_enable_utf8 => 1, on_connect_do => 'SET NAMES utf8', };
 
@@ -20,5 +20,10 @@ $db_opts->{AutoCommit} //= 1;
         pass => $ENV{OPENCLOSET_AVATAR_DATABASE_PASS} // 'opencloset',
         opts => $db_opts,
     },
+
+    ## must set secret of staff.theopencloset.net
+    secrets       => [ $ENV{OPENCLOSET_SECRET} ],
+    cookie_domain => $ENV{OPENCLOSET_DOMAIN} || 'localhost' || '.theopencloset.net',
+
     token => $ENV{OPENCLOSET_AVATAR_TOKEN} || 's3cr3t',
 };
