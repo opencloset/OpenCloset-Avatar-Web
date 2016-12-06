@@ -172,7 +172,8 @@ sub md5sum {
         my $resize = Path::Tiny::path( sprintf '%s.s=%dx%d', $image, $s, $s );
         unless ( $resize->exists ) {
             my $im = Image::Imlib2->load("$image");
-            my $image2 = $im->create_scaled_image( $s, $s );
+            ## If x or y are 0, then retain the aspect ratio given in the other.
+            my $image2 = $im->create_scaled_image( $s, 0 );
             $image2->image_set_format('png');
             $image2->save("$resize");
         }
