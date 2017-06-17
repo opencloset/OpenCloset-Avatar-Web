@@ -71,13 +71,7 @@ sub create {
         }
 
         my $hex_string = unpack( 'H*', $img->slurp );
-        $self->log->info("### $hex_string");
-        $self->log->info( "### " . $img->size );
-        # $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
         $avatar_image = $avatar->create_related( 'avatar_images', { image => \"0x$hex_string" } );
-        $hex_string = unpack( 'H*', $avatar_image->image );
-        $self->log->info("### $hex_string");
-        $self->log->info( "### " . length $avatar_image->image );
 
         unless ($avatar_image) {
             $self->error( 500, 'Failed to create a avatar image' );
@@ -164,7 +158,6 @@ sub md5sum {
     my $image;
     if ($avatar) {
         my $avatar_image = $avatar->avatar_images( undef, { order_by => { -desc => 'rating' }, rows => 1 } )->single;
-        $self->log->info( length $avatar_image->get_column('image') );
         my ( $prefix, $rest ) = $md5sum =~ /(\w{2})(\w*)/;
         $image = Path::Tiny::path(
             $self->app->home->rel_file( sprintf( 'public/thumbnails/%s/%s.%d', $prefix, $rest, $avatar_image->id ) ) );
