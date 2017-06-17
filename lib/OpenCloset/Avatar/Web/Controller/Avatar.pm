@@ -66,9 +66,11 @@ sub create {
 
     my $hex_string = unpack( 'h*', $img->slurp );
     $self->log->info("### $hex_string");
+    $self->log->info( "### " . $img->size );
     my $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
     $hex_string = unpack( 'h*', $avatar_image->image );
     $self->log->info("### $hex_string");
+    $self->log->info( "### " . length $avatar_image->image );
 
     return $self->error( 500, 'Failed to create a avatar image' ) unless $avatar_image;
 
