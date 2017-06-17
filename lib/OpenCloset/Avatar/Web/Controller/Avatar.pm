@@ -4,9 +4,10 @@ use Mojolicious::Types;
 
 use Digest::MD5 ();
 use HTTP::Tiny;
-use Image::Info ();
 use Image::Imlib2;
-use Path::Tiny ();
+use Image::Info ();
+use Path::Tiny  ();
+use Try::Tiny;
 
 has schema => sub { shift->app->schema };
 
@@ -60,19 +61,40 @@ sub create {
     my $key = $v->param('key');
     my $img = $v->param('img');
 
-    my $avatar = $self->schema->resultset('Avatar')->find_or_create( { md5sum => Digest::MD5::md5_hex($key) } );
+    my $guard = $self->schema->txn_scope_guard;
+    my ( $avatar, $avatar_image );
+    my $success = try {
+        $avatar = $self->schema->resultset('Avatar')->find_or_create( { md5sum => Digest::MD5::md5_hex($key) } );
+        unless ($avatar) {
+            $self->error( 500, 'Failed to create a avatar' );
+            return;
+        }
 
-    return $self->error( 500, 'Failed to create a avatar' ) unless $avatar;
+        my $hex_string = unpack( 'h*', $img->slurp );
+        $self->log->info("### $hex_string");
+        $self->log->info( "### " . $img->size );
+        $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
+        $hex_string = unpack( 'h*', $avatar_image->image );
+        $self->log->info("### $hex_string");
+        $self->log->info( "### " . length $avatar_image->image );
 
-    my $hex_string = unpack( 'h*', $img->slurp );
-    $self->log->info("### $hex_string");
-    $self->log->info( "### " . $img->size );
-    my $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
-    $hex_string = unpack( 'h*', $avatar_image->image );
-    $self->log->info("### $hex_string");
-    $self->log->info( "### " . length $avatar_image->image );
+        unless ($avatar_image) {
+            $self->error( 500, 'Failed to create a avatar image' );
+            return;
+        }
 
-    return $self->error( 500, 'Failed to create a avatar image' ) unless $avatar_image;
+        $guard->commit;
+        return 1;
+    }
+    catch {
+        my $err = $_;
+        $self->log->error("Transaction error: POST /avatar");
+        $self->log->error($err);
+        $self->error( 500, $err );
+        return;
+    };
+
+    return unless $success;
 
     $self->res->headers->location(
         $self->url_for(
