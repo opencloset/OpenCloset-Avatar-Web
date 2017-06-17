@@ -64,7 +64,11 @@ sub create {
 
     return $self->error( 500, 'Failed to create a avatar' ) unless $avatar;
 
+    my $hex_string = unpack( 'h*', $img->slurp );
+    $self->log->info("### $hex_string");
     my $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
+    $hex_string = unpack( 'h*', $avatar_image->image );
+    $self->log->info("### $hex_string");
 
     return $self->error( 500, 'Failed to create a avatar image' ) unless $avatar_image;
 
