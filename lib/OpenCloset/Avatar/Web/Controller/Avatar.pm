@@ -163,7 +163,7 @@ sub md5sum {
     my $image;
     if ($avatar) {
         my $avatar_image = $avatar->avatar_images( undef, { order_by => { -desc => 'rating' }, rows => 1 } )->single;
-        $self->log->info( length $avatar_image->image );
+        $self->log->info( length $avatar_image->get_column('image') );
         my ( $prefix, $rest ) = $md5sum =~ /(\w{2})(\w*)/;
         $image = Path::Tiny::path(
             $self->app->home->rel_file( sprintf( 'public/thumbnails/%s/%s.%d', $prefix, $rest, $avatar_image->id ) ) );
