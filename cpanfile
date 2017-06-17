@@ -4,3 +4,4 @@ requires 'Image::Imlib2';
 requires 'Image::Info';
 requires 'Mojolicious::Types';
 requires 'Path::Tiny';
+requires 'Try::Tiny';
