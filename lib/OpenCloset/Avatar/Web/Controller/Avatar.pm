@@ -70,12 +70,12 @@ sub create {
             return;
         }
 
-        my $hex_string = unpack( 'h*', $img->slurp );
+        my $hex_string = unpack( 'H*', $img->slurp );
         $self->log->info("### $hex_string");
         $self->log->info( "### " . $img->size );
         # $avatar_image = $avatar->create_related( 'avatar_images', { image => $img->slurp } );
-        $avatar_image = $avatar->create_related( 'avatar_images', { image => \"x'$hex_string'" } );
-        $hex_string = unpack( 'h*', $avatar_image->image );
+        $avatar_image = $avatar->create_related( 'avatar_images', { image => \"0x$hex_string" } );
+        $hex_string = unpack( 'H*', $avatar_image->image );
         $self->log->info("### $hex_string");
         $self->log->info( "### " . length $avatar_image->image );
 
