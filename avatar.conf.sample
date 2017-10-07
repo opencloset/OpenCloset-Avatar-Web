@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use Mojo::JSON ();
 
+my $PORT = $ENV{PORT} || 5000;
+
 my $db_opts =
     $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS}
     ? Mojo::JSON::decode_json( $ENV{OPENCLOSET_AVATAR_DATABASE_OPTS} )
@@ -20,6 +22,7 @@ $db_opts->{AutoCommit} //= 1;
         pass => $ENV{OPENCLOSET_AVATAR_DATABASE_PASS} // 'opencloset',
         opts => $db_opts,
     },
+    hypnotoad => { listen => ["http://*:$PORT"] },
 
     ## must set secret of staff.theopencloset.net
     secrets       => [ $ENV{OPENCLOSET_SECRET} ],
