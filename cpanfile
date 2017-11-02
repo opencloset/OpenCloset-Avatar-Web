@@ -10,7 +10,4 @@ requires 'Path::Tiny';
 requires 'Try::Tiny';
 
 # from opencloset cpan
-requires 'OpenCloset::Plugin::Helpers';
-
-# OpenCloset::Plugin::Helpers 의 의존성인데 현재 버전에서는 빠져있음
-requires 'OpenCloset::Calculator::LateFee';
+requires 'OpenCloset::Plugin::Helpers', 'v0.0.24';
