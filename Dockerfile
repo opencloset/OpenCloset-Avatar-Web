@@ -1,4 +1,4 @@
-FROM opencloset/node:latest as builder
+FROM registry.theopencloset.net/opencloset/node:latest as builder
 MAINTAINER Hyungsuk Hong <aanoaa@gmail.com>
 
 WORKDIR /build
@@ -17,7 +17,7 @@ COPY Gruntfile.coffee Gruntfile.coffee
 RUN grunt
 
 
-FROM opencloset/perl:latest
+FROM registry.theopencloset.net/opencloset/perl:latest
 
 RUN groupadd opencloset && useradd -g opencloset opencloset
 
