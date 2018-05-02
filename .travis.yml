@@ -1,0 +1,29 @@
+if: tag IS present
+
+sudo: required
+
+language: perl
+
+services:
+  - docker
+
+install:
+  - echo "Skip install"
+
+script:
+  - echo "Skip test"
+
+after_success:
+  - docker --version
+  - docker build -f Dockerfile -t opencloset/avatar:$TRAVIS_TAG .
+  - docker tag opencloset/avatar:$TRAVIS_TAG registry.theopencloset.net/opencloset/avatar:$TRAVIS_TAG
+  - docker push registry.theopencloset.net/opencloset/avatar:$TRAVIS_TAG
+
+notifications:
+  email:
+    recipients:
+      - staff@silex.kr
+    on_success: always # default: change
+    on_failure: always # default: always
+  ## irc 는 동작하지않음
+  ## https://github.com/aanoaa/fake-pause/blob/develop/.travis.yml 참고

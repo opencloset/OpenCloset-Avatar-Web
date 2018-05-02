@@ -1,10 +1,12 @@
 # OpenCloset-Avatar-Web #
 
+https://travis-ci.org/opencloset/OpenCloset-Avatar-Web.svg?branch=master
+
 열린옷장 프로필 이미지 서비스
 
 ## Version ##
 
-v0.2.0
+v0.2.1
 
 ## Dependencies ##
 
