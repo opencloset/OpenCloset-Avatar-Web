@@ -17,7 +17,9 @@ after_success:
   - docker --version
   - docker build -f Dockerfile -t opencloset/avatar:$TRAVIS_TAG .
   - docker tag opencloset/avatar:$TRAVIS_TAG registry.theopencloset.net/opencloset/avatar:$TRAVIS_TAG
+  - docker tag opencloset/avatar:$TRAVIS_TAG registry.theopencloset.net/opencloset/avatar:latest
   - docker push registry.theopencloset.net/opencloset/avatar:$TRAVIS_TAG
+  - docker push registry.theopencloset.net/opencloset/avatar:latest
 
 notifications:
   email:
