@@ -35,6 +35,7 @@ RUN cpanm --notest \
 WORKDIR /home/opencloset/service/avatar.theopencloset.net
 COPY --from=builder /build .
 COPY . .
+RUN mv avatar.conf.sample avatar.conf
 RUN mkdir -p public/thumbnails
 RUN chown -R opencloset:opencloset .
 VOLUME /home/opencloset/service/avatar.theopencloset.net/public/thumbnails
