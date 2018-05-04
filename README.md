@@ -1,6 +1,6 @@
 # OpenCloset-Avatar-Web #
 
-[![Build Status](https://travis-ci.org/opencloset/OpenCloset-Avatar-Web.svg?branch=v0.2.1)](https://travis-ci.org/opencloset/OpenCloset-Avatar-Web)
+[![Build Status](https://travis-ci.org/opencloset/OpenCloset-Avatar-Web.svg?branch=v0.2.2)](https://travis-ci.org/opencloset/OpenCloset-Avatar-Web)
 
 열린옷장 프로필 이미지 서비스
 
